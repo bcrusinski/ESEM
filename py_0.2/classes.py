@@ -85,7 +85,7 @@ class Date_ESEM:
 
     def __init__(self, file_path: Union[str, pd.DataFrame]) -> None:
         
-        dado: pd.DataFrame = self.__ler_dado(file_path=file_path)
+        self.dado: pd.DataFrame = self.__ler_dado(file_path=file_path)
 
         return None
     
@@ -109,6 +109,7 @@ class Date_ESEM:
         
     def __pontuacao(self, pessoa_0: pd.DataFrame, pessoa_1: pd.DataFrame) -> float:
 
+        nome:        tuple[str] = pessoa_0['Nome'],        pessoa_1['Nome']
         genero:      tuple[str] = pessoa_0['Genero'],      pessoa_1['Genero']
         sexualidade: tuple[str] = pessoa_0['Sexualidade'], pessoa_1['Sexualidade']
         respostas:   np.array   = pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy() - pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy()
@@ -138,11 +139,49 @@ class Date_ESEM:
         
         else:
 
-            return np.linalg.multi_dot([respostas, respostas])
+            return np.array([np.linalg.multi_dot([respostas, respostas]), nome[0], nome[1]])
         
-    def agrupar_casais(self, colunas_interesse: Union[list, None] = None) -> np.array:
+    def agrupar_casais(self, colunas_interesse: Union[list, None] = None) -> set:
         #Ao não adicionar parâmetro entende-se que tdas as colunas imputadas a classe são os dados de interresse
 
+        if colunas_interesse is list:
 
+            dado: pd.DataFrame = deepcopy(self.dado[colunas_interesse])
 
-        return np.array
+        elif  colunas_interesse is None:
+
+            dado: pd.DataFrame = deepcopy(self.dado)
+
+        else:
+
+            raise ValueError('As colunas de interresse só são suportdadas para o tipo list ou entregue o data frame pronto ao carregar o objeto.')
+        
+        len: int =  dado.shape[0]
+        
+        fila_prioridade: FilaPrioridade = FilaPrioridade()
+
+        for i in range(0, len):
+
+            for j in range(0, len):
+
+                if i != j:
+
+                    fila_prioridade.inserir(self.__pontuacao(dado.iloc[i], dado.iloc[j]))
+
+        pessoas: set = {}
+        casais:  set = {}
+
+        while fila_prioridade:
+
+            par = fila_prioridade.retirar()
+
+            if par[1] not in pessoas and par[2] not in pessoas:
+
+                casais.add(par[1:3]) #[1:3] é para retirar apenas o nome do casal
+
+            else:
+
+                pass
+                    
+        return casais
+        
