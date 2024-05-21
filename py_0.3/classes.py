@@ -8,7 +8,7 @@ class FilaPrioridade:
 
     def __init__(self) -> None:
 
-        self.fila: np.array = np.array([])
+        self.fila: np.ndarray = np.array([])
 
         self.pai            = lambda x: (x-1)//2
         self.filho_direito  = lambda x: x*2 + 2
@@ -38,14 +38,14 @@ class FilaPrioridade:
 
         return self
     
-    def retirar(self) -> np.array:
+    def retirar(self) -> np.ndarray:
         #vai funcionar tal qual o pop
 
         if np.shape(self.fila)[0] == 0:
 
             raise "Lista vazia"
 
-        item: np.array = deepcopy(self.fila[0])
+        item: np.ndarray = deepcopy(self.fila[0])
 
         self.fila[0] = self.fila[-1]
         
@@ -112,9 +112,9 @@ class Date_ESEM:
         nome:        tuple[str] = pessoa_0['Nome'],        pessoa_1['Nome']
         genero:      tuple[str] = pessoa_0['Genero'],      pessoa_1['Genero']
         sexualidade: tuple[str] = pessoa_0['Sexualidade'], pessoa_1['Sexualidade']
-        respostas:   np.array   = pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy() - pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy()
+        respostas:   np.ndarray = pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy() - pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy()
 
-        combinacoes_incompativeis = {
+        combinacoes_incompativeis: dict = {
             "Hetero": {
                 ("F", "F"),
                 ("M", "M")
@@ -141,7 +141,7 @@ class Date_ESEM:
 
             return np.array([np.linalg.multi_dot([respostas, respostas]), nome[0], nome[1]])
         
-    def agrupar_casais(self, colunas_interesse: Union[list, None] = None) -> set:
+    def agrupar_casais(self, colunas_interesse: Union[list[str], None] = None) -> set:
         #Ao não adicionar parâmetro entende-se que tdas as colunas imputadas a classe são os dados de interresse
 
         if colunas_interesse is list:
@@ -168,16 +168,17 @@ class Date_ESEM:
 
                     fila_prioridade.inserir(self.__pontuacao(dado.iloc[i], dado.iloc[j]))
 
-        pessoas: set = {}
-        casais:  set = {}
+        pessoas: set[str]                = set()
+        casais:  set[np.array[str, str]] = set()
 
         while fila_prioridade:
 
-            par = fila_prioridade.retirar()
+            par: tuple[float, str, str] = fila_prioridade.retirar()
 
             if par[1] not in pessoas and par[2] not in pessoas:
 
-                casais.add(par[1:3]) #[1:3] é para retirar apenas o nome do casal
+                casais.add(tuple(par[1], par[2]))
+                pessoas.add(par[1], par[2])
 
             else:
 
