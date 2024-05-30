@@ -16,7 +16,7 @@ class FilaPrioridade:
         
         return None
     
-    def inserir(self, item: np.array) -> "FilaPrioridade":
+    def inserir(self, item: np.ndarray) -> "FilaPrioridade":
 
         self.fila = np.append(self.fila, item)
 
@@ -114,7 +114,7 @@ class Date_ESEM:
         sexualidade: tuple[str] = pessoa_0['Sexualidade'], pessoa_1['Sexualidade']
         respostas:   np.ndarray = pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy() - pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy()
 
-        combinacoes_incompativeis: dict = {
+        combinacoes_incompativeis: dict[set] = {
             "Hetero": {
                 ("F", "F"),
                 ("M", "M")
@@ -141,35 +141,35 @@ class Date_ESEM:
 
             return np.array([np.linalg.multi_dot([respostas, respostas]), nome[0], nome[1]])
         
-    def agrupar_casais(self, colunas_interesse: Union[list[str], None] = None) -> set:
+    def agrupar_casais(self, colunas_interesse: list[str], colunas_sou: list[str]) -> set:
         #Ao não adicionar parâmetro entende-se que tdas as colunas imputadas a classe são os dados de interresse
 
-        if colunas_interesse is list:
+        if len(colunas_interesse) != len(colunas_sou):
 
-            dado: pd.DataFrame = deepcopy(self.dado[colunas_interesse])
-
-        elif  colunas_interesse is None:
-
-            dado: pd.DataFrame = deepcopy(self.dado)
-
-        else:
-
-            raise ValueError('As colunas de interresse só são suportdadas para o tipo list ou entregue o data frame pronto ao carregar o objeto.')
+            raise ('colunas imcompativos, reveja as entradas')
         
-        len: int =  dado.shape[0]
+        colunas_default: list =  ['Nome', 'Genero', 'Sexualidade']
+
+        colunas_interesse, colunas_sou = colunas_interesse + colunas_default, colunas_sou + colunas_default
+
+        dado_i: pd.DataFrame = self.dado[colunas_interesse]
+        dado_s: pd.DataFrame = self.dado[colunas_sou]
+
+        lenth: int =  dado_i.shape[0]
         
         fila_prioridade: FilaPrioridade = FilaPrioridade()
 
-        for i in range(0, len):
+        for i in range(0, lenth):
 
-            for j in range(0, len):
+            for j in range(0, lenth):
 
                 if i != j:
 
-                    fila_prioridade.inserir(self.__pontuacao(dado.iloc[i], dado.iloc[j]))
+                    fila_prioridade.inserir(self.__pontuacao(dado_i.iloc[i], dado_s.iloc[j]) + 
+                                            self.__pontuacao(dado_s.iloc[i], dado_i.iloc[j]))
 
-        pessoas: set[str]                = set()
-        casais:  set[np.array[str, str]] = set()
+        pessoas: set[str]        = set()
+        casais:  set[np.ndarray] = set()
 
         while fila_prioridade:
 
