@@ -26,7 +26,7 @@ class FilaPrioridade:
 
             pai = self.pai(i)
 
-            if self.fila[pai, 0] < self.fila[i, 0]:
+            if self.fila[pai, 0] > self.fila[i, 0]:
 
                 self.fila[pai], self.fila[i] = self.fila[i], self.fila[pai]
 
@@ -65,11 +65,11 @@ class FilaPrioridade:
 
             maior_filho = filho_e
 
-            if filho_d < len and self.fila[filho_d, 0] > self.fila[filho_e, 0]:
+            if filho_d < len and self.fila[filho_d, 0] < self.fila[filho_e, 0]:
 
                 maior_filho = filho_d
 
-            if self.fila[i, 0] < self.fila[maior_filho, 0]:
+            if self.fila[i, 0] > self.fila[maior_filho, 0]:
 
                 self.fila[i], self.fila[maior_filho] = self.fila[maior_filho], self.fila[i]
 
