@@ -112,7 +112,7 @@ class Date_ESEM:
         nome:        tuple[str] = pessoa_0['Nome'],        pessoa_1['Nome']
         genero:      tuple[str] = pessoa_0['Genero'],      pessoa_1['Genero']
         sexualidade: tuple[str] = pessoa_0['Sexualidade'], pessoa_1['Sexualidade']
-        respostas:   np.ndarray = pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy() - pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy()
+        respostas:   np.ndarray = pessoa_0.drop(['Genero', 'Sexualidade'], axis=0).to_numpy() - pessoa_1.drop(['Genero', 'Sexualidade'], axis=0).to_numpy()
 
         combinacoes_incompativeis: dict[set] = {
             "Hetero": {
